@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="glass-card">
+            <h1 class="mb-4 text-gradient fw-bolder">{{ event.title }}</h1>
+            <div class="d-flex flex-wrap gap-2 mb-4 pb-4 border-bottom border-light border-opacity-25">
+                <span class="badge bg-light text-dark p-2 shadow-sm rounded-pill px-3">🎟️ 席次上限: {{ event.capacity }}</span>
+                <span class="badge bg-light text-dark p-2 shadow-sm rounded-pill px-3">⏳ 報名死線: {{ event.deadline }}</span>
+                <span class="badge bg-light text-dark p-2 shadow-sm rounded-pill px-3">📍 地點: {{ event.location or '未定' }}</span>
+                <span class="badge bg-light text-dark p-2 shadow-sm rounded-pill px-3">🕒 刊登時間: {{ event.created_at[:10] if event.created_at else '' }}</span>
+            </div>
+            
+            <h4 class="mb-3 text-secondary">活動介紹</h4>
+            <p class="lead" style="white-space: pre-wrap; font-size: 1.1rem; line-height: 1.8;">{{ event.description or '（主辦方有點神秘，沒有提供敘述）' }}</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- 學生報名操作區塊 -->
+        <div class="glass-card mb-4 text-center">
+            <h3 class="mb-4 text-gradient">準備好參加了嗎？</h3>
+            <a href="{{ url_for('registrations.register_page', event_id=event.id) }}" class="btn btn-primary-custom btn-lg w-100 mb-3 shadow">
+                立刻報名 / 排入候補
+            </a>
+            <small class="text-muted d-block mt-2">📌 名額有限，超過會自動轉入候補席</small>
+        </div>
+
+        <!-- 主辦方管理區塊 -->
+        <div class="glass-card">
+            <h5 class="mb-3 text-secondary fw-bold">🔧 主辦方控制台</h5>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('registrations.manage_registrations', event_id=event.id) }}" class="btn btn-outline-light border-0 text-start ps-3 bg-light bg-opacity-10">
+                    👥 查看報到名單
+                </a>
+                <a href="{{ url_for('events.edit_event_page', event_id=event.id) }}" class="btn btn-outline-light border-0 text-start ps-3 bg-light bg-opacity-10 mt-1">
+                    ✏️ 編輯活動資訊
+                </a>
+                <form action="{{ url_for('events.delete_event', event_id=event.id) }}" method="POST" onsubmit="return confirm('確定要刪除這個活動嗎？學生的報名資料將一併被全數銷毀！');" class="mt-2 text-start">
+                    <button type="submit" class="btn btn-outline-danger w-100 border-0 text-start ps-3 bg-danger bg-opacity-10">
+                        🗑️ 下架此活動
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

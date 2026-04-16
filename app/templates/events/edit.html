@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="glass-card shadow-lg">
+            <div class="text-center mb-5">
+                <span class="badge bg-warning text-dark mb-2 px-3 py-2 rounded-pill">編輯模式</span>
+                <h2 class="text-gradient fw-bold">修改活動特徵</h2>
+                <p class="text-muted">調整活動細節，確保資訊準確</p>
+            </div>
+            
+            <form action="{{ url_for('events.update_event', event_id=event.id) }}" method="POST">
+                
+                <div class="mb-4">
+                    <label for="title" class="form-label fw-bold text-secondary">活動名稱 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-lg border-secondary border-opacity-25" id="title" name="title" value="{{ event.title }}" required>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="capacity" class="form-label fw-bold text-secondary">席次區間 (人數上限) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">🎟️</span>
+                            <input type="number" class="form-control border-secondary border-opacity-25" id="capacity" name="capacity" value="{{ event.capacity }}" min="1" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="deadline" class="form-label fw-bold text-secondary">報名死線時間 <span class="text-danger">*</span></label>
+                        <!-- For MVP purposes we drop date string direct injection but rely on user re-picking -->
+                        <input type="datetime-local" class="form-control border-secondary border-opacity-25" id="deadline" name="deadline" value="{{ event.deadline }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="location" class="form-label fw-bold text-secondary">舉辦地點</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">📍</span>
+                        <input type="text" class="form-control border-secondary border-opacity-25" id="location" name="location" value="{{ event.location or '' }}">
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label for="description" class="form-label fw-bold text-secondary">給潛在參與者的簡介</label>
+                    <textarea class="form-control border-secondary border-opacity-25" id="description" name="description" rows="5">{{ event.description or '' }}</textarea>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-center">
+                    <a href="{{ url_for('events.event_detail', event_id=event.id) }}" class="btn btn-outline-custom w-100 w-sm-auto">取消編輯</a>
+                    <button type="submit" class="btn btn-primary-custom px-5 w-100 w-sm-auto shadow">💾 儲存並覆寫變更</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

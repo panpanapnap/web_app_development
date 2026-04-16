@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- 頂部資訊列 -->
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <a href="{{ url_for('events.event_detail', event_id=event.id) }}" class="btn btn-outline-light btn-sm mb-3 rounded-pill px-3 shadow-sm">
+            ← 返回前台活動卡
+        </a>
+        <h1 class="text-gradient fw-bold display-6 mb-1">{{ event.title }}</h1>
+        <p class="text-muted mb-0">活動名單中控台</p>
+    </div>
+    <div class="text-end">
+        <div class="badge bg-success px-4 py-3 shadow-sm rounded-4 fs-6">
+            <span class="opacity-75 d-block text-uppercase small tracking-wide mb-1">場館座位上限</span>
+            <span class="fw-bolder fs-4">{{ event.capacity }}</span> 人
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+        <h4 class="mb-0 fw-bold">已捕獲之報名資料庫 <span class="badge bg-primary ms-2">{{ registrations|length }}</span></h4>
+        <button class="btn btn-outline-custom btn-sm" onclick="window.print()">🖨️ 列印此頁單據</button>
+    </div>
+
+    {% if registrations %}
+    <div class="table-responsive">
+        <table class="table table-hover table-glass align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col" class="ps-3 pt-0 text-uppercase text-muted opacity-75">流水單號</th>
+                    <th scope="col" class="pt-0 text-uppercase text-muted opacity-75">逢甲學號</th>
+                    <th scope="col" class="pt-0 text-uppercase text-muted opacity-75">證件姓名</th>
+                    <th scope="col" class="pt-0 text-uppercase text-muted opacity-75">通聯方式</th>
+                    <th scope="col" class="pt-0 text-uppercase text-muted opacity-75">即時落點判定</th>
+                    <th scope="col" class="pe-3 pt-0 text-uppercase text-muted opacity-75 text-end">系統捕獲時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr class="{% if reg.status == '已取消' %}opacity-50{% endif %}" style="transition: all 0.2s;">
+                    <td class="ps-3 fw-bold text-secondary">#{{ reg.id }}</td>
+                    <td class="fw-bolder text-white">{{ reg.student_id }}</td>
+                    <td>{{ reg.name }}</td>
+                    <td class="text-info">{{ reg.phone or '（無提供）' }}</td>
+                    <td>
+                        {% if reg.status == '成功' %}
+                            <span class="badge bg-success rounded-pill px-3 py-2 shadow-sm">🎫 正取席次</span>
+                        {% elif reg.status == '候補' %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm">🔖 候補排隊</span>
+                        {% else %}
+                            <span class="badge bg-secondary rounded-pill px-3 py-2">❌ 殘念棄權</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-3 small text-muted font-monospace">{{ reg.created_at[:19] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="display-1 opacity-25 mb-3">📭</div>
+        <h4 class="text-muted fw-bold">資料庫目前靜悄悄的</h4>
+        <p class="text-secondary">還沒有任何人遞交報名表，或許趕緊到 IG 宣傳這場活動？</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

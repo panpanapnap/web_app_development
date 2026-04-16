@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bolder mb-3 text-gradient">探索校園脈動</h1>
+    <p class="lead text-muted">掌握逢甲大學最新鮮、最有趣的社團與系所活動</p>
+</div>
+
+{% if events %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for event in events %}
+    <div class="col">
+        <div class="glass-card h-100 d-flex flex-column">
+            <h3 class="h4 fw-bold mb-3">{{ event.title }}</h3>
+            <p class="text-muted small mb-4 flex-grow-1">
+                {{ event.description[:100] + '...' if event.description and event.description|length > 100 else event.description or '（無詳細描述）' }}
+            </p>
+            <div class="mb-4">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge badge-success me-2 px-2 shadow-sm">地點</span>
+                    <small>{{ event.location or '未定' }}</small>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge badge-warning me-2 px-2 shadow-sm">截止</span>
+                    <small>{{ event.deadline }}</small>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge badge-danger me-2 px-2 shadow-sm">名額</span>
+                    <small>{{ event.capacity }} 人</small>
+                </div>
+            </div>
+            <a href="{{ url_for('events.event_detail', event_id=event.id) }}" class="btn btn-primary-custom w-100 mt-auto">
+                了解詳情與報名
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 glass-card">
+    <h3 class="text-muted">目前暫無開放的活動喔</h3>
+    <p class="mb-4">還沒人當第一個主辦方，趁現在搶下首波版面吧！</p>
+    <a href="{{ url_for('events.create_event_page') }}" class="btn btn-primary-custom">立刻建立活動</a>
+</div>
+{% endif %}
+{% endblock %}

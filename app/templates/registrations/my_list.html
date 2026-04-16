@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if not student_id %}
+<!-- 登入查詢框 (MVP模式) -->
+<div class="row justify-content-center document-center" style="min-height: 60vh; align-items: center;">
+    <div class="col-md-7 col-lg-5">
+        <div class="glass-card text-center p-5 shadow-lg position-relative overflow-hidden">
+            <div class="position-absolute top-0 start-50 translate-middle w-100 h-100 bg-primary opacity-25" style="filter: blur(80px); z-index: -1;"></div>
+            
+            <div class="display-3 mb-4">🔍</div>
+            <h2 class="mb-4 text-gradient fw-bold">喚醒您的戰績</h2>
+            <p class="text-muted mb-5">請輸入您的學號，讓系統調出您所有搶過的活動碎片</p>
+            
+            <form action="{{ url_for('registrations.my_registrations') }}" method="GET">
+                <div class="input-group input-group-lg mb-4 shadow-sm rounded-4 overflow-hidden">
+                    <span class="input-group-text bg-dark border-0 text-secondary">ID</span>
+                    <input type="text" class="form-control bg-dark text-white border-0 text-center fw-bold fs-4" name="student_id" placeholder="M1234567" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary-custom btn-lg w-100 fs-5">🔍 深度查詢</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- 報名清單結果 -->
+<div class="d-flex justify-content-between align-items-end mb-5">
+    <div>
+        <span class="badge bg-primary bg-opacity-25 text-primary mb-2 px-3 py-2 rounded-pill">個人足跡儀表板</span>
+        <h1 class="fw-bolder m-0 d-flex align-items-center gap-3">
+            <span class="text-gradient">{{ student_id }}</span>
+            <span class="fs-4 text-muted fw-normal">的戰利品</span>
+        </h1>
+    </div>
+    <a href="{{ url_for('registrations.my_registrations') }}" class="btn btn-outline-light btn-sm rounded-pill px-4">切換連線帳號</a>
+</div>
+
+{% if registrations %}
+<div class="row row-cols-1 row-cols-lg-2 g-4">
+    {% for reg in registrations %}
+    <div class="col">
+        <div class="glass-card position-relative h-100 d-flex flex-column {% if reg.status == '已取消' %}opacity-50{% endif %}">
+            
+            <div class="position-absolute top-0 end-0 mt-4 me-4">
+                {% if reg.status == '成功' %}
+                <span class="badge bg-success fs-6 shadow px-3 py-2 rounded-pill">🎫 報名成功</span>
+                {% elif reg.status == '候補' %}
+                <span class="badge bg-warning text-dark fs-6 shadow px-3 py-2 rounded-pill position-relative">
+                    🔖 候補中...
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle animation-blink">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </span>
+                {% else %}
+                <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill">❌ 已退回</span>
+                {% endif %}
+            </div>
+
+            <!-- 活動名稱標題 (連結) -->
+            <h3 class="mb-2 pe-5 pt-2">
+                <a href="{{ url_for('events.event_detail', event_id=reg.event_id) }}" class="text-white text-decoration-none fw-bold hover-accent">{{ reg.event_title }}</a>
+            </h3>
+            
+            <p class="text-muted small mb-4 font-monospace">申請建立於：{{ reg.created_at[:19] }}</p>
+            
+            <div class="bg-dark bg-opacity-50 rounded-4 p-4 mb-4 mt-auto border border-white border-opacity-10 position-relative">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <small class="text-secondary d-block text-uppercase tracking-wider fw-bold mb-1">使用本名</small>
+                        <span class="fs-5">{{ reg.name }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-secondary d-block text-uppercase tracking-wider fw-bold mb-1">聯絡方式</small>
+                        <span class="fs-5 text-info">{{ reg.phone or '未設定' }}</span>
+                    </div>
+                </div>
+                
+                <!-- 簡易更新區塊（折疊式） -->
+                {% if reg.status != '已取消' %}
+                <button class="btn btn-sm btn-link text-muted position-absolute top-0 end-0 mt-2 me-2 p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#editReg{{ reg.id }}">
+                    ✏️ 改資料
+                </button>
+                <div class="collapse pt-3 mt-3 border-top border-secondary border-opacity-25" id="editReg{{ reg.id }}">
+                    <form action="{{ url_for('registrations.update_registration', reg_id=reg.id) }}" method="POST">
+                        <input type="hidden" name="student_id" value="{{ student_id }}">
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="text" class="form-control bg-transparent text-white border-secondary" name="name" value="{{ reg.name }}" placeholder="姓名" required>
+                            <input type="text" class="form-control bg-transparent text-white border-secondary" name="phone" value="{{ reg.phone }}" placeholder="電話">
+                            <button class="btn btn-outline-success" type="submit">儲存</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if reg.status != '已取消' %}
+            <!-- 捨棄按鈕帶有跳回遞交警告 -->
+            <form action="{{ url_for('registrations.cancel_registration', reg_id=reg.id) }}" method="POST" class="mt-auto" onsubmit="return confirm('❗ 嚴重警告 ❗\n若原本佔有正取席次，一旦取消，名額會被系統瞬間轉交給後面的排隊者，且無法還原！\n\n確定要放棄資格嗎？');">
+                <input type="hidden" name="student_id" value="{{ student_id }}">
+                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill border-0 bg-danger bg-opacity-10 py-2 fw-bold transition-all">
+                    放棄此活動資格
+                </button>
+            </form>
+            {% endif %}
+            
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card py-5 text-center mt-5">
+    <div class="display-1 opacity-25 mb-4">🏜️</div>
+    <h3 class="fw-bold mb-3">這裡空空如也，一片荒蕪</h3>
+    <p class="text-secondary mb-4">系統中目前找不到您用「{{ student_id }}」申請的任何活動憑證。</p>
+    <a href="{{ url_for('events.index') }}" class="btn btn-primary-custom btn-lg">🚀 現在就去大廳搶頭香</a>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

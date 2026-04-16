@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="glass-card shadow-lg">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary bg-opacity-25 text-primary mb-2 px-3 py-2 rounded-pill">發布平台</span>
+                <h2 class="text-gradient fw-bold">舉辦新活動</h2>
+                <p class="text-muted">在這裡將您的好點子化作真實的校園活動</p>
+            </div>
+            
+            <form action="{{ url_for('events.create_event') }}" method="POST">
+                
+                <div class="mb-4">
+                    <label for="title" class="form-label fw-bold text-secondary">活動名稱 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-lg border-secondary border-opacity-25" id="title" name="title" placeholder="例如: 逢甲資工迎新之夜" required>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="capacity" class="form-label fw-bold text-secondary">席次區間 (人數上限) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">🎟️</span>
+                            <input type="number" class="form-control border-secondary border-opacity-25" id="capacity" name="capacity" placeholder="100" min="1" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="deadline" class="form-label fw-bold text-secondary">報名死線時間 <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control border-secondary border-opacity-25" id="deadline" name="deadline" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="location" class="form-label fw-bold text-secondary">舉辦地點 (選填)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">📍</span>
+                        <input type="text" class="form-control border-secondary border-opacity-25" id="location" name="location" placeholder="例如: 育樂館 / 第一國際會議廳">
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label for="description" class="form-label fw-bold text-secondary">給潛在參與者的簡介</label>
+                    <textarea class="form-control border-secondary border-opacity-25" id="description" name="description" rows="5" placeholder="說說這個活動有什麼好玩的吧..."></textarea>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <button type="submit" class="btn btn-primary-custom btn-lg flex-grow-1 shadow">✨ 立即發布活動</button>
+                    <a href="{{ url_for('events.index') }}" class="btn btn-outline-custom btn-lg">先不要</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

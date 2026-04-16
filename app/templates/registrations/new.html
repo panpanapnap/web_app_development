@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center pt-3">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card shadow-lg position-relative overflow-hidden">
+            <!-- 裝飾用光暈 -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-25" style="filter: blur(100px); z-index: -1; transform: translate(-50%, -50%); pointer-events: none;"></div>
+
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-25 text-success mb-3 px-3 py-2 rounded-pill shadow-sm">線上卡位</span>
+                <h2 class="text-gradient fw-bolder">取得入場資格</h2>
+                <p class="text-muted mt-2">您正在爭取 <strong>{{ event.title }}</strong> 的參與資格</p>
+            </div>
+            
+            <form action="{{ url_for('registrations.register', event_id=event.id) }}" method="POST">
+                
+                <div class="mb-4 position-relative">
+                    <label for="student_id" class="form-label fw-bold text-secondary">逢甲大學學號 <span class="text-danger">*</span></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">🎓</span>
+                        <input type="text" class="form-control bg-transparent border-secondary border-opacity-25 text-white fw-bold" id="student_id" name="student_id" placeholder="例如: M1234567" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4 position-relative">
+                    <label for="name" class="form-label fw-bold text-secondary">證件真實姓名 <span class="text-danger">*</span></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">👤</span>
+                        <input type="text" class="form-control bg-transparent border-secondary border-opacity-25 text-white" id="name" name="name" required>
+                    </div>
+                </div>
+
+                <div class="mb-5 position-relative">
+                    <label for="phone" class="form-label fw-bold text-secondary">簡訊聯絡電話 <small class="text-muted fw-normal">(選填)</small></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white">📱</span>
+                        <input type="tel" class="form-control bg-transparent border-secondary border-opacity-25 text-white" id="phone" name="phone" placeholder="0900-000-000">
+                    </div>
+                </div>
+
+                <div class="alert bg-warning bg-opacity-10 border border-warning border-opacity-25 px-4 py-3 d-flex align-items-start mb-5 shadow-sm rounded-4">
+                    <span class="fs-4 me-3">⏳</span>
+                    <small class="text-warning lh-base">
+                        <strong>自動分流警語：</strong><br>
+                        系統將以這份資料「送出到達伺服器」的微秒級時間進行排名。若此時正取名額已被搶佔，系統將一秒自動為您掛上「候補」席次並發放序號。
+                    </small>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <button type="submit" class="btn btn-primary-custom btn-lg flex-grow-1 shadow w-100">🚀 一鍵搶位送出</button>
+                    <a href="{{ url_for('events.event_detail', event_id=event.id) }}" class="btn btn-outline-custom btn-lg w-100 w-sm-auto">返回考慮</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

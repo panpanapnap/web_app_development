@@ -1,16 +1,8 @@
-from flask import Flask
-from app.routes.recipe import recipe_bp
+from app import create_app
 
-def create_app():
-    # 指定 template 與 static 的存放路徑，確保與專案結構相符
-    app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
-    
-    # 註冊 Blueprints
-    app.register_blueprint(recipe_bp)
-    
-    return app
-
+# 建立專案入口 app
 app = create_app()
 
 if __name__ == '__main__':
+    # 以 debug 模式啟動本地伺服器
     app.run(debug=True)
